@@ -2,101 +2,130 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sales Pipeline Tracker Widget</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Pipeline Tracker</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #f8f9fa;
-            padding: 16px;
+            padding: 20px;
             overflow-x: auto;
         }
+
         .pipeline-container {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             min-width: max-content;
-            padding-bottom: 10px;
+            padding-bottom: 20px;
         }
+
         .pipeline-column {
-            background: #fff;
+            background: #ffffff;
             border-radius: 8px;
-            min-width: 220px;
-            max-width: 220px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            min-width: 280px;
+            max-width: 280px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+
         .column-header {
-            padding: 14px;
+            padding: 16px;
             border-bottom: 2px solid #e9ecef;
             position: sticky;
             top: 0;
-            background: #fff;
+            background: #ffffff;
             border-radius: 8px 8px 0 0;
             z-index: 10;
         }
+
         .column-title {
             font-size: 14px;
             font-weight: 600;
             color: #212529;
+            margin-bottom: 4px;
         }
+
         .column-count {
             font-size: 12px;
             color: #6c757d;
         }
+
         .cards-container {
-            padding: 10px;
-            min-height: 80px;
-            max-height: 460px;
+            padding: 12px;
+            min-height: 100px;
+            max-height: 600px;
             overflow-y: auto;
         }
+
         .deal-card {
             background: #fff;
             border: 1px solid #dee2e6;
             border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 10px;
-            cursor: default;
-            transition: box-shadow 0.2s;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
+
         .deal-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
+
+        .deal-card:last-child {
+            margin-bottom: 0;
+        }
+
         .deal-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: #212529;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
+
         .deal-contact {
-            font-size: 12px;
+            font-size: 13px;
             color: #495057;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+
         .deal-contact::before {
             content: "👤";
-            font-size: 11px;
-            margin-right: 3px;
+            font-size: 12px;
         }
+
         .deal-next-step {
-            font-size: 11px;
+            font-size: 12px;
             color: #6c757d;
             background: #f8f9fa;
-            padding: 5px 10px;
+            padding: 6px 10px;
             border-radius: 4px;
             display: inline-block;
-            margin-top: 2px;
+            margin-top: 4px;
         }
+
         .next-step-label {
             font-weight: 600;
             color: #495057;
-            margin-right: 3px;
+            margin-right: 4px;
         }
+
         .empty-state {
             text-align: center;
             color: #adb5bd;
-            font-size: 12px;
-            padding: 16px;
+            font-size: 13px;
+            padding: 20px;
         }
-        /* Stage header colors */
+
+        /* Color coding for different stages */
         .column-header.new { border-top: 3px solid #6c757d; }
         .column-header.open { border-top: 3px solid #0d6efd; }
         .column-header.in-progress { border-top: 3px solid #0dcaf0; }
@@ -106,35 +135,46 @@
         .column-header.attended { border-top: 3px solid #fd7e14; }
         .column-header.feedback { border-top: 3px solid #198754; }
         .column-header.closed { border-top: 3px solid #dc3545; }
-        /* Scrollbars */
+
+        /* Scrollbar styling */
         .cards-container::-webkit-scrollbar {
             width: 6px;
         }
+
         .cards-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 3px;
         }
+
         .cards-container::-webkit-scrollbar-thumb {
             background: #adb5bd;
             border-radius: 3px;
         }
+
+        .cards-container::-webkit-scrollbar-thumb:hover {
+            background: #6c757d;
+        }
+
         .header {
-            margin-bottom: 18px;
+            margin-bottom: 24px;
         }
+
         .header h1 {
-            font-size: 18px;
+            font-size: 24px;
             color: #212529;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
+
         .header p {
-            font-size: 13px;
+            font-size: 14px;
             color: #6c757d;
         }
+
         .last-updated {
-            font-size: 11px;
+            font-size: 12px;
             color: #adb5bd;
             text-align: right;
-            margin-top: 14px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -143,7 +183,9 @@
         <h1>Sales Pipeline Tracker</h1>
         <p>Track leads through your sales process</p>
     </div>
+
     <div class="pipeline-container">
+        <!-- NEW -->
         <div class="pipeline-column">
             <div class="column-header new">
                 <div class="column-title">New</div>
@@ -151,14 +193,331 @@
             </div>
             <div class="cards-container" id="new">
                 <div class="deal-card">
-                    <div class="deal-name">Acme Corp</div>
-                    <div class="deal-contact">John Smith</div>
+                    <div class="deal-name">Victoria Tiase - U of Utah</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Awaiting Response
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Robert Sturgeon - CommonSpirit</div>
+                    <div class="deal-contact">Brian Locke</div>
                     <div class="deal-next-step">
                         <span class="next-step-label">Next:</span>Need Contact Info
                     </div>
                 </div>
+                <div class="deal-card">
+                    <div class="deal-name">Todd Selmer - U of Utah</div>
+                    <div class="deal-contact">Brian Locke</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Need Contact Info
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Tyler Durns - Huntsman</div>
+                    <div class="deal-contact">Brian Locke</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Need Contact Info
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Thomas Gethin-Jones - Huntsman</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Need Contact Info
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Andrew LaFree - UC San Diego</div>
+                    <div class="deal-contact">Sow Kobayashi</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Send Initial Email
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Debra Sukin - Texas Children's</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Carlos Ponce - Harvard Med</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Markus Hannan - UC Health</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Awaiting Response
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Dan Nguyen - U of Washington</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Quan Bui - UC San Diego Health</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Schedule a Meeting
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Shamita Punjabi - Stanford Children's</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Rachel De Andrade - TeamHealth</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Amanda Neidermyer - Centura Health</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Asher Kaye - Mayo Clinic</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Tyler Barr - Seaside Emergency</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Tuong-Vi Tran - CHOC</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Katharina Wyns - Children's CO</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Bill Brandenburg - Longetrics</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Catherine Cooper - Missoula Valley</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Philipp Hannan - Banner UMC</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Schedule a Meeting
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Saned Raouf - UCSF</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Alex Sable-Smith - Stanford Med</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Thank Them, Capture Notes
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Tunc Kiymaz - Rothman Ortho</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Francis del Rosario - Porter Adventist</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Eva Aagaard - Washington U</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Awaiting Response
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Leslie Palacios-Helgeson - Legacy</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Tuan Tran - Denver Health</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Brian Davis - BoulderCentre Ortho</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Natasha Marvi - University Hospitals</div>
+                    <div class="deal-contact">Brian Alvarez</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Zac Kay - Colchuck</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Joseph Adewumi - U of Colorado</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Brooke Bredbeck - Corewell Lakeland</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Nieuwoudt Claudia - Prisma Health</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Seerat Poonia - HCA HealthONE</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Sarah Snow - Duke Health</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Awaiting Response
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Cory Manly - Midtown Inpatient</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Awaiting Response
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Anna Schubert - Aligned Providers</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Paige Bennett - Olathe Health</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Paul Tran - Phoenix Children's</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Alan Anticevic - Manifest Tech</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Ryan Morley - SpringTide Ventures</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Zach Ward - Memorial Hermann</div>
+                    <div class="deal-contact">Brian Alvarez</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Diana Tran - MD Anderson</div>
+                    <div class="deal-contact">Brian Alvarez</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Ralph Gonzales - UCSF</div>
+                    <div class="deal-contact">Kim Weiss</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Laura Kehoe - Mass General</div>
+                    <div class="deal-contact">Kim Weiss</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>--
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- OPEN -->
         <div class="pipeline-column">
             <div class="column-header open">
                 <div class="column-title">Open</div>
@@ -168,24 +527,49 @@
                 <div class="empty-state">No deals yet</div>
             </div>
         </div>
+
+        <!-- IN PROGRESS -->
         <div class="pipeline-column">
             <div class="column-header in-progress">
                 <div class="column-title">In Progress</div>
                 <div class="column-count" id="count-in-progress">0 deals</div>
             </div>
             <div class="cards-container" id="in-progress">
-                <div class="empty-state">No deals yet</div>
+                <div class="deal-card">
+                    <div class="deal-name">Austin Kilaru - UPenn</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Attend Meeting
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- WE CONTACTED -->
         <div class="pipeline-column">
             <div class="column-header contacted">
                 <div class="column-title">We Contacted</div>
                 <div class="column-count" id="count-contacted">0 deals</div>
             </div>
             <div class="cards-container" id="contacted">
-                <div class="empty-state">No deals yet</div>
+                <div class="deal-card">
+                    <div class="deal-name">Paul Haskins - Carilion Clinic</div>
+                    <div class="deal-contact">Pranav Koirala</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Awaiting Response
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">John Bender - Miramont Family Med</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Awaiting Response
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- CONTACT RESPONDED -->
         <div class="pipeline-column">
             <div class="column-header responded">
                 <div class="column-title">Contact Responded</div>
@@ -195,56 +579,169 @@
                 <div class="empty-state">No deals yet</div>
             </div>
         </div>
+
+        <!-- OUTREACH ATTEMPT #2 -->
+        <div class="pipeline-column">
+            <div class="column-header contacted">
+                <div class="column-title">Outreach Attempt #2</div>
+                <div class="column-count" id="count-outreach">0 deals</div>
+            </div>
+            <div class="cards-container" id="outreach">
+                <div class="deal-card">
+                    <div class="deal-name">Murat Uralkan - Houston Methodist</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Follow Up Email/Call
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEETING SCHEDULED -->
         <div class="pipeline-column">
             <div class="column-header meeting">
                 <div class="column-title">Meeting Scheduled</div>
                 <div class="column-count" id="count-meeting">0 deals</div>
             </div>
             <div class="cards-container" id="meeting">
-                <div class="empty-state">No deals yet</div>
+                <div class="deal-card">
+                    <div class="deal-name">Joseph Sakai - U of Colorado</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Schedule a Meeting
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- ATTENDED FIRST MEETING -->
         <div class="pipeline-column">
             <div class="column-header attended">
                 <div class="column-title">Attended Meeting</div>
                 <div class="column-count" id="count-attended">0 deals</div>
             </div>
             <div class="cards-container" id="attended">
-                <div class="empty-state">No deals yet</div>
+                <div class="deal-card">
+                    <div class="deal-name">Maurizio Fava - Mass General</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Stay In Touch
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Steve Koh - UC San Diego</div>
+                    <div class="deal-contact">Sow Kobayashi</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Follow Up Email/Call
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Joey Smith - Sharp Chula Vista</div>
+                    <div class="deal-contact">Kim Weiss</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Follow Up Email/Call
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Maureen Canellas - UMass Memorial</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Capture Notes, Thank Them
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Jason Xie - Columbia Irving Med</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Stay In Touch
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Tamaan Osbourne - AMA</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Stay In Touch
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Damon Kuehl - Carilion Clinic</div>
+                    <div class="deal-contact">Pranav Koirala</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Schedule a Meeting
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- RECEIVED FEEDBACK -->
         <div class="pipeline-column">
             <div class="column-header feedback">
                 <div class="column-title">Received Feedback</div>
                 <div class="column-count" id="count-feedback">0 deals</div>
             </div>
             <div class="cards-container" id="feedback">
-                <div class="empty-state">No deals yet</div>
+                <div class="deal-card">
+                    <div class="deal-name">Sophia Vinogradov - U of Minnesota</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Stay In Touch
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Suma Jacob - UCLA Semel Institute</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Additional Feedback???
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- NOT A PROSPECT -->
         <div class="pipeline-column">
             <div class="column-header closed">
                 <div class="column-title">Not A Prospect</div>
                 <div class="column-count" id="count-closed">0 deals</div>
             </div>
             <div class="cards-container" id="closed">
-                <div class="empty-state">No deals yet</div>
+                <div class="deal-card">
+                    <div class="deal-name">Lonny Northrup</div>
+                    <div class="deal-contact">Kim Weiss</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Stay In Touch
+                    </div>
+                </div>
+                <div class="deal-card">
+                    <div class="deal-name">Tamara Todd - imail.org</div>
+                    <div class="deal-contact">Warren Pettine</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Need Contact Info
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
     <div class="last-updated">Last updated: <span id="update-date"></span></div>
+
     <script>
         // Set the last updated date
         document.getElementById('update-date').textContent = new Date().toLocaleString();
-        // Update card counts
+
+        // Function to update card counts
         function updateCounts() {
-            const columns = ['new', 'open', 'in-progress', 'contacted', 'responded', 'meeting', 'attended', 'feedback', 'closed'];
+            const columns = ['new', 'open', 'in-progress', 'contacted', 'responded', 'outreach', 'meeting', 'attended', 'feedback', 'closed'];
+            
             columns.forEach(col => {
                 const container = document.getElementById(col);
                 const cards = container.querySelectorAll('.deal-card');
-                document.getElementById(`count-${col}`).textContent = `${cards.length} deal${cards.length!==1 ? 's' : ''}`;
+                const count = cards.length;
+                const countElement = document.getElementById(`count-${col}`);
+                countElement.textContent = `${count} deal${count !== 1 ? 's' : ''}`;
             });
         }
+
+        // Initial count update
         updateCounts();
     </script>
 </body>
