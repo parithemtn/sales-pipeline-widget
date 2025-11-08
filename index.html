@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sales Pipeline Tracker Widget</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        .pipeline-container {
+            display: flex;
+            gap: 12px;
+            min-width: max-content;
+            padding-bottom: 10px;
+        }
+        .pipeline-column {
+            background: #fff;
+            border-radius: 8px;
+            min-width: 220px;
+            max-width: 220px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .column-header {
+            padding: 14px;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            border-radius: 8px 8px 0 0;
+            z-index: 10;
+        }
+        .column-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+        }
+        .column-count {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .cards-container {
+            padding: 10px;
+            min-height: 80px;
+            max-height: 460px;
+            overflow-y: auto;
+        }
+        .deal-card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: default;
+            transition: box-shadow 0.2s;
+        }
+        .deal-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+        .deal-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 6px;
+        }
+        .deal-contact {
+            font-size: 12px;
+            color: #495057;
+            margin-bottom: 6px;
+        }
+        .deal-contact::before {
+            content: "👤";
+            font-size: 11px;
+            margin-right: 3px;
+        }
+        .deal-next-step {
+            font-size: 11px;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+        .next-step-label {
+            font-weight: 600;
+            color: #495057;
+            margin-right: 3px;
+        }
+        .empty-state {
+            text-align: center;
+            color: #adb5bd;
+            font-size: 12px;
+            padding: 16px;
+        }
+        /* Stage header colors */
+        .column-header.new { border-top: 3px solid #6c757d; }
+        .column-header.open { border-top: 3px solid #0d6efd; }
+        .column-header.in-progress { border-top: 3px solid #0dcaf0; }
+        .column-header.contacted { border-top: 3px solid #6f42c1; }
+        .column-header.responded { border-top: 3px solid #20c997; }
+        .column-header.meeting { border-top: 3px solid #ffc107; }
+        .column-header.attended { border-top: 3px solid #fd7e14; }
+        .column-header.feedback { border-top: 3px solid #198754; }
+        .column-header.closed { border-top: 3px solid #dc3545; }
+        /* Scrollbars */
+        .cards-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .cards-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .cards-container::-webkit-scrollbar-thumb {
+            background: #adb5bd;
+            border-radius: 3px;
+        }
+        .header {
+            margin-bottom: 18px;
+        }
+        .header h1 {
+            font-size: 18px;
+            color: #212529;
+            margin-bottom: 3px;
+        }
+        .header p {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .last-updated {
+            font-size: 11px;
+            color: #adb5bd;
+            text-align: right;
+            margin-top: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sales Pipeline Tracker</h1>
+        <p>Track leads through your sales process</p>
+    </div>
+    <div class="pipeline-container">
+        <div class="pipeline-column">
+            <div class="column-header new">
+                <div class="column-title">New</div>
+                <div class="column-count" id="count-new">0 deals</div>
+            </div>
+            <div class="cards-container" id="new">
+                <div class="deal-card">
+                    <div class="deal-name">Acme Corp</div>
+                    <div class="deal-contact">John Smith</div>
+                    <div class="deal-next-step">
+                        <span class="next-step-label">Next:</span>Need Contact Info
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header open">
+                <div class="column-title">Open</div>
+                <div class="column-count" id="count-open">0 deals</div>
+            </div>
+            <div class="cards-container" id="open">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header in-progress">
+                <div class="column-title">In Progress</div>
+                <div class="column-count" id="count-in-progress">0 deals</div>
+            </div>
+            <div class="cards-container" id="in-progress">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header contacted">
+                <div class="column-title">We Contacted</div>
+                <div class="column-count" id="count-contacted">0 deals</div>
+            </div>
+            <div class="cards-container" id="contacted">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header responded">
+                <div class="column-title">Contact Responded</div>
+                <div class="column-count" id="count-responded">0 deals</div>
+            </div>
+            <div class="cards-container" id="responded">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header meeting">
+                <div class="column-title">Meeting Scheduled</div>
+                <div class="column-count" id="count-meeting">0 deals</div>
+            </div>
+            <div class="cards-container" id="meeting">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header attended">
+                <div class="column-title">Attended Meeting</div>
+                <div class="column-count" id="count-attended">0 deals</div>
+            </div>
+            <div class="cards-container" id="attended">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header feedback">
+                <div class="column-title">Received Feedback</div>
+                <div class="column-count" id="count-feedback">0 deals</div>
+            </div>
+            <div class="cards-container" id="feedback">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+        <div class="pipeline-column">
+            <div class="column-header closed">
+                <div class="column-title">Not A Prospect</div>
+                <div class="column-count" id="count-closed">0 deals</div>
+            </div>
+            <div class="cards-container" id="closed">
+                <div class="empty-state">No deals yet</div>
+            </div>
+        </div>
+    </div>
+    <div class="last-updated">Last updated: <span id="update-date"></span></div>
+    <script>
+        // Set the last updated date
+        document.getElementById('update-date').textContent = new Date().toLocaleString();
+        // Update card counts
+        function updateCounts() {
+            const columns = ['new', 'open', 'in-progress', 'contacted', 'responded', 'meeting', 'attended', 'feedback', 'closed'];
+            columns.forEach(col => {
+                const container = document.getElementById(col);
+                const cards = container.querySelectorAll('.deal-card');
+                document.getElementById(`count-${col}`).textContent = `${cards.length} deal${cards.length!==1 ? 's' : ''}`;
+            });
+        }
+        updateCounts();
+    </script>
+</body>
+</html>
